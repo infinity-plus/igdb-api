@@ -18,6 +18,11 @@ class Status(BaseModel):
     message: str
 
 
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+
 @app.get(
     "/status",
     response_model=Status,
