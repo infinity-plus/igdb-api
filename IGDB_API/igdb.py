@@ -74,8 +74,5 @@ async def get_game_info(game: str) -> Optional["GamePydantic"]:  # type: ignore
         )
         game_obj = GamePydantic(**temp)
     except HTTPError as e:
-        print(f"CLIENT_ID: {CLIENT_ID}")
-        print(f"CLIENT_SECRET: {CLIENT_SECRET}")
-        print(f"access_token: {access_token}")
         raise IGDBApiError(f"Error getting game info: {e}") from e
     return game_obj
