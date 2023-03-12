@@ -4,7 +4,7 @@ from typing import Optional
 from requests import HTTPError, post
 
 from IGDB_API import CLIENT_ID, CLIENT_SECRET
-from IGDB_API.api.core.models import GamePydantic, Token, TokenPydantic
+from IGDB_API.api.core.models import GamePydantic, Token
 
 
 AUTH_URL = "https://id.twitch.tv/oauth2/token"
@@ -34,7 +34,6 @@ async def get_access_token(client_id: str, client_secret: str) -> str:
         response = post(AUTH_URL, headers=headers, data=data)
         response.raise_for_status()
         # Create Pydantic Object from API response
-        print(response.json())
         token_obj = Token(**response.json())
         await token_obj.save()
     except HTTPError as e:
@@ -42,7 +41,7 @@ async def get_access_token(client_id: str, client_secret: str) -> str:
     return token_obj.access_token
 
 
-async def get_game_info(game: str) -> Optional["GamePydantic"]:  # type: ignore
+async def get_game_info(game: str) -> Optional[list["GamePydantic"]]:  # type: ignore  # noqa: E501
     try:
         if CLIENT_SECRET is None or CLIENT_ID is None:
             raise ValueError(
@@ -59,20 +58,22 @@ async def get_game_info(game: str) -> Optional["GamePydantic"]:  # type: ignore
     }
     request_params = {
         "headers": headers,
-        "data": f'fields name,summary,cover.url; search "{game}"; limit 1;',
+        "data": f'fields name,summary,cover.url; search "{game}";',
     }
     try:
         response = post(API_URL, **request_params)
         response.raise_for_status()
+        ret_list = []
 
-        # Create Pydantic Object from API response
-        temp = response.json()[0]
-        temp["cover_url"] = (
-            temp.pop("cover")["url"]
-            .replace("t_thumb", "t_cover_big")
-            .replace("//", "https://")
-        )
-        game_obj = GamePydantic(**temp)
+        #  Loop through results and find exact match
+        for game_obj in response.json():
+            # Create Pydantic Object from API response
+            game_obj["cover_url"] = (
+                game_obj.pop("cover")["url"]
+                .replace("t_thumb", "t_cover_big")
+                .replace("//", "https://")
+            )
+            ret_list.append(GamePydantic(**game_obj))
     except HTTPError as e:
         raise IGDBApiError(f"Error getting game info: {e}") from e
-    return game_obj
+    return ret_list
