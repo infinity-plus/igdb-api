@@ -11,7 +11,7 @@ from tortoise.validators import RegexValidator
 class Game(Model):
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255, description="Name of the game")
-    summary = fields.TextField(description="Summary of the game")
+    summary = fields.TextField(description="Summary of the game", null=True)
 
     cover_url = fields.CharField(
         max_length=255,
@@ -22,6 +22,7 @@ class Game(Model):
                 re.IGNORECASE,
             )
         ],
+        default="https://via.placeholder.com/264x352",
     )
 
 

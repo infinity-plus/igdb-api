@@ -69,9 +69,13 @@ async def get_game_info(game: str) -> Optional[list["GamePydantic"]]:  # type: i
         for game_obj in response.json():
             # Create Pydantic Object from API response
             game_obj["cover_url"] = (
-                game_obj.pop("cover")["url"]
-                .replace("t_thumb", "t_cover_big")
-                .replace("//", "https://")
+                (
+                    game_obj.pop("cover")["url"]
+                    .replace("t_thumb", "t_cover_big")
+                    .replace("//", "https://")
+                )
+                if "cover" in game_obj
+                else "https://via.placeholder.com/264x352"
             )
             ret_list.append(GamePydantic(**game_obj))
     except HTTPError as e:
