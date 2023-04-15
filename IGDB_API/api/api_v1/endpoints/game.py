@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from tortoise.exceptions import IncompleteInstanceError, IntegrityError
 
 from IGDB_API.api.core.models import Game, GamePydantic
 from IGDB_API.igdb import get_game_info
@@ -43,6 +44,6 @@ async def get_game(game_name: str):
             ret_list.append(game)
             try:
                 await Game.create(**game.dict())
-            except Exception:
+            except (IntegrityError, IncompleteInstanceError):
                 pass
     return ret_list
