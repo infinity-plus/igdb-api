@@ -1,4 +1,3 @@
-from os import getenv
 from typing import Optional
 
 from requests import HTTPError, post

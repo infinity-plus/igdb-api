@@ -1,6 +1,4 @@
-from os import getenv
-
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from pydantic import BaseModel
 from tortoise.contrib.fastapi import register_tortoise
 
