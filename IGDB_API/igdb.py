@@ -14,8 +14,6 @@ API_URL = "https://api.igdb.com/v4/games/"
 class IGDBApiError(Exception):
     """Custom exception for IGDB API errors"""
 
-    pass
-
 
 async def get_access_token(client_id: str, client_secret: str) -> str:
     #  get token from database and check it is not expired
