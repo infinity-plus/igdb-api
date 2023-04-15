@@ -9,6 +9,8 @@ from tortoise.validators import RegexValidator
 
 
 class Game(Model):
+    """Game model for storing game info"""
+
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255, description="Name of the game")
     summary = fields.TextField(description="Summary of the game", null=True)
@@ -26,23 +28,25 @@ class Game(Model):
     )
 
 
-#  class to store access token and expiry time
 class Token(Model):
+    """Token model for storing access token and expiry time"""
+
     id = fields.IntField(pk=True)
     access_token = fields.CharField(max_length=255)
     expires_in = fields.FloatField()
     #  time_stamp in posix time
     time_stamp = fields.DatetimeField(auto_now=True)
 
-    #  method to check if the token is expired by comparing it with the
-    # current time
     def is_expired(self):
+        """Check if token is expired"""
         return (
             time_to_posix(current_time())
             > self.time_stamp.timestamp() + self.expires_in
         )
 
     class Meta:
+        """Meta class for Token model"""
+
         table = "token"
 
 

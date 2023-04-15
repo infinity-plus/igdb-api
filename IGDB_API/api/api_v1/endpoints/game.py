@@ -11,6 +11,8 @@ router = APIRouter()
 
 
 class Status(BaseModel):
+    """Status model for error responses"""
+
     message: str
 
 
@@ -22,6 +24,7 @@ class Status(BaseModel):
     },
 )
 async def get_game(game_name: str):
+    """Get game info from the database or from IGDB API"""
     ret_list = []
     if games := await Game.filter(name__icontains=game_name):
         for game_obj in games:

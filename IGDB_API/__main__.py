@@ -13,11 +13,14 @@ app = FastAPI(
 
 
 class Status(BaseModel):
+    """Status model for status responses"""
+
     message: str
 
 
 @app.get("/")
 async def root():
+    """Root endpoint"""
     return {"message": "Hello World"}
 
 
@@ -27,6 +30,7 @@ async def root():
     responses={500: {"model": Status}},
 )
 async def status():
+    """Status endpoint"""
     return Status(message="OK")
 
 

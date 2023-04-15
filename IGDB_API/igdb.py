@@ -15,6 +15,7 @@ class IGDBApiError(Exception):
 
 
 async def get_access_token(client_id: str, client_secret: str) -> str:
+    """Get access token from database or from IGDB API"""
     #  get token from database and check it is not expired
     token_obj = await Token.get_or_none()
     if token_obj and not token_obj.is_expired():
@@ -39,6 +40,7 @@ async def get_access_token(client_id: str, client_secret: str) -> str:
 
 
 async def get_game_info(game: str) -> Optional[list["GamePydantic"]]:  # type: ignore  # noqa: E501
+    """Get game info from IGDB API"""
     try:
         if CLIENT_SECRET is None or CLIENT_ID is None:
             raise ValueError(
