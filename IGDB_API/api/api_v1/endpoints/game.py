@@ -1,8 +1,7 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
-from tortoise.contrib.fastapi import HTTPNotFoundError
 
 from IGDB_API.api.core.models import Game, GamePydantic
 from IGDB_API.igdb import get_game_info
@@ -18,14 +17,12 @@ class Status(BaseModel):
     "/{game_name}",
     response_model=List[GamePydantic],
     responses={
-        404: {"model": HTTPNotFoundError},
         500: {"model": Status},
     },
 )
 async def get_game(game_name: str):
-    games = await Game.filter(name__icontains=game_name)
     ret_list = []
-    if games:
+    if games := await Game.filter(name__icontains=game_name):
         for game_obj in games:
             game_dict = game_obj.__dict__ if game_obj else {}
             game = (
@@ -33,7 +30,7 @@ async def get_game(game_name: str):
                     **{
                         k: v
                         for k, v in game_dict.items()
-                        if k in GamePydantic.__fields__  # noqa: E501
+                        if k in GamePydantic.__fields__
                     }
                 )
                 if game_dict
@@ -41,17 +38,11 @@ async def get_game(game_name: str):
             )
             if game:
                 ret_list.append(game)
-    if not games:
-        if games := await get_game_info(game_name):
-            for game in games:
-                ret_list.append(game)
-                try:
-                    await Game.create(**game.dict())
-                except Exception:
-                    pass
-        else:
-            raise HTTPException(
-                status_code=404,
-                detail="Game not found",
-            )
+    elif games := await get_game_info(game_name):
+        for game in games:
+            ret_list.append(game)
+            try:
+                await Game.create(**game.dict())
+            except Exception:
+                pass
     return ret_list
