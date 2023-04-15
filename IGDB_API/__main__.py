@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 from tortoise.contrib.fastapi import register_tortoise
 
-from IGDB_API import DB_URI, PORT
+from IGDB_API import DB_URI, PORT, HOST
 from IGDB_API.api.api_v1.api import router as api_v1_router
 
 
@@ -46,4 +46,4 @@ register_tortoise(
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app=app, host="0.0.0.0", port=PORT)
+    uvicorn.run(app=app, host=HOST, port=PORT)
